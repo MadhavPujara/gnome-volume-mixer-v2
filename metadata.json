@@ -1,5 +1,6 @@
 {
   "shell-version": ["45", "46"],
+  "version": 1,
   "uuid": "app-volume-mixer@madhavpujara.github.io",
   "original-author": "mymindstorm@evermiss.net",
   "author": "Madhav",
