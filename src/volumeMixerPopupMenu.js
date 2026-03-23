@@ -1,42 +1,30 @@
-'use strict';
+import Gio from 'gi://Gio';
+import Gvc from 'gi://Gvc';
+import St from 'gi://St';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import * as Volume from 'resource:///org/gnome/shell/ui/status/volume.js';
+import { ApplicationStreamSlider } from "./applicationStreamSlider.js";
 
-import { ApplicationStreamSlider } from "./applicationStreamSlider";
+const { Settings } = Gio;
+const { MixerSinkInput } = Gvc;
 
-const { Settings, SettingsSchemaSource } = imports.gi.Gio;
-const { MixerSinkInput } = imports.gi.Gvc;
-
-// https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/popupMenu.js
-const PopupMenu = imports.ui.popupMenu;
-// https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/status/volume.js
-const Volume = imports.ui.status.volume;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-
-export class VolumeMixerPopupMenu extends PopupMenu.PopupMenuSection {
-    constructor() {
-        super();
+export class VolumeMixerManager {
+    constructor(settings) {
         this._applicationStreams = {};
-
-        // The PopupSeparatorMenuItem needs something above and below it or it won't display
-        this._hiddenItem = new PopupMenu.PopupBaseMenuItem();
-        this._hiddenItem.set_height(0)
-        this.addMenuItem(this._hiddenItem);
-
-        this.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        this.settings = settings;
 
         this._control = Volume.getMixerControl();
+        
+        this._volumeSlider = Main.panel.statusArea.quickSettings._volumeOutput._output;
+        this._mixerSection = new PopupMenu.PopupMenuSection();
+        this._separator = new PopupMenu.PopupSeparatorMenuItem();
+        
+        this._volumeSlider.menu.addMenuItem(this._separator);
+        this._volumeSlider.menu.addMenuItem(this._mixerSection);
+
         this._streamAddedEventId = this._control.connect("stream-added", this._streamAdded.bind(this));
         this._streamRemovedEventId = this._control.connect("stream-removed", this._streamRemoved.bind(this));
-
-        let gschema = SettingsSchemaSource.new_from_directory(
-            Me.dir.get_child('schemas').get_path(),
-            SettingsSchemaSource.get_default(),
-            false
-        );
-
-        this.settings = new Settings({
-            settings_schema: gschema.lookup('net.evermiss.mymindstorm.volume-mixer', true)
-        });
 
         this._settingsChangedId = this.settings.connect('changed', () => this._updateStreams());
 
@@ -64,11 +52,35 @@ export class VolumeMixerPopupMenu extends PopupMenu.PopupMenuSection {
             }
         }
 
-        this._applicationStreams[id] = new ApplicationStreamSlider(stream, { showDesc: this._showStreamDesc, showIcon: this._showStreamIcon });
-        this.addMenuItem(this._applicationStreams[id].item);
+        const slider = new ApplicationStreamSlider(stream, { showDesc: this._showStreamDesc, showIcon: this._showStreamIcon });
+        
+        const item = new PopupMenu.PopupBaseMenuItem({ reactive: false });
+        
+        const vbox = new St.BoxLayout({ vertical: true, x_expand: true });
+        
+        const name = stream.get_name();
+        const description = stream.get_description();
+        if (name || description) {
+            const text = name && this._showStreamDesc ? `${name} - ${description}` : (name || description);
+            const label = new St.Label({
+                text: text,
+                y_align: 2,
+            });
+            // Add some margin so it doesn't stick directly to the slider
+            label.margin_bottom = 6;
+            // Align with slider icon
+            label.margin_start = 12;
+            vbox.add_child(label);
+        }
+        
+        vbox.add_child(slider);
+        item.add_child(vbox);
+        
+        this._applicationStreams[id] = { slider, item };
+        this._mixerSection.addMenuItem(item);
     }
 
-    _streamRemoved(_control, id) {
+    _streamRemoved(control, id) {
         if (id in this._applicationStreams) {
             this._applicationStreams[id].item.destroy();
             delete this._applicationStreams[id];
@@ -87,7 +99,7 @@ export class VolumeMixerPopupMenu extends PopupMenu.PopupMenuSection {
         this._showStreamIcon = this.settings.get_boolean("show-icon");
 
         for (const stream of this._control.get_streams()) {
-            this._streamAdded(this._control, stream.get_id())
+            this._streamAdded(this._control, stream.get_id());
         }
     }
 
@@ -95,6 +107,13 @@ export class VolumeMixerPopupMenu extends PopupMenu.PopupMenuSection {
         this._control.disconnect(this._streamAddedEventId);
         this._control.disconnect(this._streamRemovedEventId);
         this.settings.disconnect(this._settingsChangedId);
-        super.destroy();
+        
+        for (const id in this._applicationStreams) {
+            this._applicationStreams[id].item.destroy();
+            delete this._applicationStreams[id];
+        }
+        
+        this._mixerSection.destroy();
+        this._separator.destroy();
     }
 };

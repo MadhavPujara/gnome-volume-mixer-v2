@@ -1,15 +1,8 @@
-'use strict';
+import { ExtensionPreferences } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+import { VolumeMixerPrefsPage } from './volumeMixerPrefsPage.js';
 
-import { VolumeMixerPrefsPage } from './volumeMixerPrefsPage';
-
-function init() {
-}
-
-function fillPreferencesWindow(window) {
-    window.add(new VolumeMixerPrefsPage());
-}
-
-export default {
-    init,
-    fillPreferencesWindow
+export default class ApplicationVolumeMixerPreferences extends ExtensionPreferences {
+    fillPreferencesWindow(window) {
+        window.add(new VolumeMixerPrefsPage(this.getSettings('net.evermiss.mymindstorm.volume-mixer')));
+    }
 }

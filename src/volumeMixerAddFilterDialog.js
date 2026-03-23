@@ -1,6 +1,5 @@
-'use strict';
-
-const { Gtk, GObject } = imports.gi;
+import Gtk from 'gi://Gtk?version=4.0';
+import GObject from 'gi://GObject';
 
 export const VolumeMixerAddFilterDialog = GObject.registerClass({
     GTypeName: 'VolumeMixerAddFilterDialog',

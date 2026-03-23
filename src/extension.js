@@ -1,29 +1,15 @@
-'use strict';
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
+import { VolumeMixerManager } from "./volumeMixerPopupMenu.js";
 
-import { VolumeMixerPopupMenu } from "./volumeMixerPopupMenu";
-
-const Main = imports.ui.main;
-
-var volumeMixer = null;
-
-function enable() {
-    volumeMixer = new VolumeMixerPopupMenu();
-
-    Main.panel.statusArea.aggregateMenu._volume.menu.addMenuItem(volumeMixer);
-}
-
-function disable() {
-    // REMINDER: It's required for extensions to clean up after themselves when
-    // they are disabled. This is required for approval during review!
-    if (volumeMixer !== null) {
-        volumeMixer.destroy();
-        volumeMixer = null;
+export default class ApplicationVolumeMixerExtension extends Extension {
+    enable() {
+        this._volumeMixer = new VolumeMixerManager(this.getSettings('net.evermiss.mymindstorm.volume-mixer'));
     }
-}
 
-export default function() {
-    return {
-        enable,
-        disable
+    disable() {
+        if (this._volumeMixer) {
+            this._volumeMixer.destroy();
+            this._volumeMixer = null;
+        }
     }
 }

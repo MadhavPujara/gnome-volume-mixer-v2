@@ -1,9 +1,8 @@
-'use strict';
-
-import { VolumeMixerAddFilterDialog } from "./volumeMixerAddFilterDialog";
-
-const { Adw, Gio, Gtk, GObject } = imports.gi;
-const ExtensionUtils = imports.misc.extensionUtils;
+import Adw from 'gi://Adw';
+import Gio from 'gi://Gio';
+import Gtk from 'gi://Gtk?version=4.0';
+import GObject from 'gi://GObject';
+import { VolumeMixerAddFilterDialog } from "./volumeMixerAddFilterDialog.js";
 
 export const VolumeMixerPrefsPage = GObject.registerClass({
     GTypeName: 'VolumeMixerPrefsPage',
@@ -13,11 +12,11 @@ export const VolumeMixerPrefsPage = GObject.registerClass({
     settings;
     addFilteredAppButtonRow;
 
-    constructor() {
+    constructor(settings) {
         // TODO: Move most of this into a .ui file.
         super();
 
-        this.settings = ExtensionUtils.getSettings("net.evermiss.mymindstorm.volume-mixer");
+        this.settings = settings;
         this.filterListData = this.settings.get_strv("filtered-apps");
 
         // Group for general settings
@@ -39,7 +38,7 @@ export const VolumeMixerPrefsPage = GObject.registerClass({
             Gio.SettingsBindFlags.DEFAULT
         );
 
-        showDescRow.add_suffix(showDescToggle);
+        showDescRow.set_suffix(showDescToggle);
         showDescRow.activatable_widget = showDescToggle;
 
         // show-icon
@@ -57,7 +56,7 @@ export const VolumeMixerPrefsPage = GObject.registerClass({
             Gio.SettingsBindFlags.DEFAULT
         );
 
-        showIconRow.add_suffix(showIconToggle);
+        showIconRow.set_suffix(showIconToggle);
         showIconRow.activatable_widget = showIconToggle;
 
         // Application filter settings group
