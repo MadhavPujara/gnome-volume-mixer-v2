@@ -14,7 +14,6 @@ class ApplicationStreamSlider extends QuickSlider {
 
         this._control = Volume.getMixerControl();
         this._stream = stream;
-        this._inDrag = false;
 
         if (opts.showIcon) {
             this.gicon = stream.get_gicon();
@@ -24,10 +23,6 @@ class ApplicationStreamSlider extends QuickSlider {
 
         // Connect events
         this._sliderChangedId = this.slider.connect('notify::value', this._sliderChanged.bind(this));
-        this.slider.connect('drag-begin', () => (this._inDrag = true));
-        this.slider.connect('drag-end', () => {
-            this._inDrag = false;
-        });
 
         this.connect('icon-clicked', () => {
             if (!this._stream) return;
