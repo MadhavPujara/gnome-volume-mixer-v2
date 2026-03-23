@@ -23,12 +23,11 @@ export class VolumeMixerManager {
         this._volumeSlider.menu.addMenuItem(this._separator);
         this._volumeSlider.menu.addMenuItem(this._mixerSection);
 
+        this._updateStreams();
+
         this._streamAddedEventId = this._control.connect("stream-added", this._streamAdded.bind(this));
         this._streamRemovedEventId = this._control.connect("stream-removed", this._streamRemoved.bind(this));
-
         this._settingsChangedId = this.settings.connect('changed', () => this._updateStreams());
-
-        this._updateStreams();
     }
 
     _streamAdded(control, id) {
