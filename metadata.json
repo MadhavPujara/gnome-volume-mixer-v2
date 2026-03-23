@@ -1,10 +1,8 @@
 {
   "shell-version": ["45", "46"],
-  "version": 1,
   "uuid": "app-volume-mixer@madhavpujara.github.io",
-  "original-author": "mymindstorm@evermiss.net",
   "author": "Madhav",
-  "name": "Application Volume Mixer",
+  "name": "Application Volume Mixer V2",
   "description": "Control volume output per-application",
-  "url": "https://github.com/mymindstorm/gnome-volume-mixer"
+  "url": "https://github.com/MadhavPujara/gnome-volume-mixer-v2"
 }
