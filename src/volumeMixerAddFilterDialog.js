@@ -20,7 +20,7 @@ export const VolumeMixerAddFilterDialog = GObject.registerClass({
         this.filterListData = filterListData;
 
         const addButton = this.add_button("Add", Gtk.ResponseType.OK);
-        addButton.get_style_context().add_class('suggested-action');
+        addButton.add_css_class('suggested-action');
         addButton.sensitive = false;
         this.add_button("Cancel", Gtk.ResponseType.CANCEL);
 
