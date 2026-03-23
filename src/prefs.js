@@ -3,6 +3,6 @@ import { VolumeMixerPrefsPage } from './volumeMixerPrefsPage.js';
 
 export default class ApplicationVolumeMixerPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
-        window.add(new VolumeMixerPrefsPage(this.getSettings('net.evermiss.mymindstorm.volume-mixer')));
+        window.add(new VolumeMixerPrefsPage(this.getSettings('io.github.madhavpujara.app-volume-mixer')));
     }
 }

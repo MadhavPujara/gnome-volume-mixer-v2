@@ -3,7 +3,7 @@ import { VolumeMixerManager } from "./volumeMixerPopupMenu.js";
 
 export default class ApplicationVolumeMixerExtension extends Extension {
     enable() {
-        this._volumeMixer = new VolumeMixerManager(this.getSettings('net.evermiss.mymindstorm.volume-mixer'));
+        this._volumeMixer = new VolumeMixerManager(this.getSettings('io.github.madhavpujara.app-volume-mixer'));
     }
 
     disable() {
