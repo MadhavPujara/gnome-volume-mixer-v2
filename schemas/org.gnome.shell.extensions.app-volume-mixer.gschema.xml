@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <schema id="io.github.madhavpujara.app-volume-mixer" path="/io/github/madhavpujara/app-volume-mixer/">
+  <schema id="org.gnome.shell.extensions.app-volume-mixer" path="/org/gnome/shell/extensions/app-volume-mixer/">
     <key name="filtered-apps" type="as">
       <default>[]</default>
     </key>

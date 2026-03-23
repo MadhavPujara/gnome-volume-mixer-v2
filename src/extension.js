@@ -3,7 +3,7 @@ import { VolumeMixerManager } from "./volumeMixerPopupMenu.js";
 
 export default class ApplicationVolumeMixerExtension extends Extension {
     enable() {
-        this._volumeMixer = new VolumeMixerManager(this.getSettings('io.github.madhavpujara.app-volume-mixer'));
+        this._volumeMixer = new VolumeMixerManager(this.getSettings('org.gnome.shell.extensions.app-volume-mixer'));
     }
 
     disable() {
