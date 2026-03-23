@@ -1,62 +1,47 @@
+import Adw from 'gi://Adw';
 import Gtk from 'gi://Gtk?version=4.0';
 import GObject from 'gi://GObject';
 
 export const VolumeMixerAddFilterDialog = GObject.registerClass({
     GTypeName: 'VolumeMixerAddFilterDialog',
-}, class VolumeMixerAddFilterDialog extends Gtk.Dialog {
+    Signals: {
+        'filter-added': { param_types: [GObject.TYPE_STRING] },
+    },
+}, class VolumeMixerAddFilterDialog extends Adw.AlertDialog {
     appNameEntry;
     filterListData;
 
-    constructor(callingWidget, filterListData) {
+    constructor(filterListData) {
         super({
-            use_header_bar: true,
-            transient_for: callingWidget.get_root(),
-            destroy_with_parent: true,
-            modal: true,
-            resizable: false,
-            title: "Add Filtered Application"
+            heading: 'Add Filtered Application',
+            close_response: 'cancel',
         });
 
         this.filterListData = filterListData;
 
-        const addButton = this.add_button("Add", Gtk.ResponseType.OK);
-        addButton.add_css_class('suggested-action');
-        addButton.sensitive = false;
-        this.add_button("Cancel", Gtk.ResponseType.CANCEL);
-
-        const dialogContent = this.get_content_area();
-        dialogContent.margin_top = 20
-        dialogContent.margin_bottom = 20
-        dialogContent.margin_end = 20
-        dialogContent.margin_start = 20
-
-        const appNameLabel = new Gtk.Label({
-            label: "Application name",
-            halign: Gtk.Align.START,
-            margin_bottom: 10
-        });
-        dialogContent.append(appNameLabel);
+        this.add_response('cancel', 'Cancel');
+        this.add_response('add', 'Add');
+        this.set_response_appearance('add', Adw.ResponseAppearance.SUGGESTED);
+        this.set_response_enabled('add', false);
 
         this.appNameEntry = new Gtk.Entry();
         this.appNameEntry.connect('activate', () => {
             if (this.checkInputValid()) {
-                this.response(Gtk.ResponseType.OK)
+                this.response('add');
             }
-        })
-        dialogContent.append(this.appNameEntry);
-
-        this.appNameEntry.connect("changed", () => {
-            addButton.sensitive = this.checkInputValid();
         });
+        this.appNameEntry.connect('changed', () => {
+            this.set_response_enabled('add', this.checkInputValid());
+        });
+
+        const box = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 10 });
+        box.append(new Gtk.Label({ label: 'Application name', halign: Gtk.Align.START }));
+        box.append(this.appNameEntry);
+        this.set_extra_child(box);
     }
 
     checkInputValid() {
-        if (this.appNameEntry.text.length === 0) {
-            return false;
-        } else if (this.filterListData.indexOf(this.appNameEntry.text) !== -1) {
-            return false;
-        } else {
-            return true;
-        }
+        return this.appNameEntry.text.length > 0
+            && this.filterListData.indexOf(this.appNameEntry.text) === -1;
     }
 });

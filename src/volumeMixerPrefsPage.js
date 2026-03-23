@@ -182,15 +182,13 @@ export const VolumeMixerPrefsPage = GObject.registerClass({
     }
 
     showFilteredAppDialog(callingWidget, filterListData) {
-        const dialog = new VolumeMixerAddFilterDialog(callingWidget, filterListData);
+        const dialog = new VolumeMixerAddFilterDialog(filterListData);
         dialog.connect('response', (_dialog, response) => {
-            if (response === Gtk.ResponseType.OK) {
+            if (response === 'add') {
                 this.addFilteredApp(dialog.appNameEntry.text);
             }
-            dialog.close();
-            dialog.destroy();
         });
-        dialog.show();
+        dialog.present(callingWidget.get_root());
     }
 });
 
