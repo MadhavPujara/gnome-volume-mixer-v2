@@ -1,3 +1,4 @@
+import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import Gvc from 'gi://Gvc';
 import St from 'gi://St';
@@ -63,7 +64,7 @@ export class VolumeMixerManager {
             const text = name && this._showStreamDesc ? `${name} - ${description}` : (name || description);
             const label = new St.Label({
                 text: text,
-                y_align: 2,
+                y_align: Clutter.ActorAlign.CENTER,
             });
             // Add some margin so it doesn't stick directly to the slider
             label.margin_bottom = 6;
