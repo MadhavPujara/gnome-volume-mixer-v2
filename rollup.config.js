@@ -1,5 +1,7 @@
 import commonjs from '@rollup/plugin-commonjs';
 
+const external = (id) => id.startsWith('gi://') || id.startsWith('resource:///');
+
 export default [
   {
     input: 'src/extension.js',
@@ -7,6 +9,7 @@ export default [
       file: `dist/extension.js`,
       format: 'es',
     },
+    external,
     plugins: [
       commonjs()
     ],
@@ -17,6 +20,7 @@ export default [
       file: `dist/prefs.js`,
       format: 'es',
     },
+    external,
     plugins: [
       commonjs()
     ],
